@@ -17,6 +17,8 @@ SSM 与 Steam 没有官方关联。Steam 是 Valve Corporation 的商标。
 
 从 [GitHub 发布页面](https://github.com/RedeatI/steam-share-master-zh/releases/latest) 下载简体中文版 Windows 精简版安装包，运行后按向导选择安装位置。精简版使用 Windows 自带的 .NET Framework 4.x，不再包含 Electron 的浏览器运行环境。
 
+安装向导提供“创建桌面快捷方式”选项，默认勾选，可以根据需要取消。
+
 安装包没有数字签名，Windows 可能提示发布者未知。可以在发布页面查看 SHA-256 校验值。
 
 原作者的 [0.1.4 安装包](https://github.com/p4ul-t/steam-share-master-ssm/releases/download/v0.1.4.electron_js/Steam.Share.Master.Setup.0.1.4.exe) 是原版，并不包含本分支的汉化和路径自动查找功能。
