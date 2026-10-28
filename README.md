@@ -15,13 +15,13 @@ SSM 与 Steam 没有官方关联。Steam 是 Valve Corporation 的商标。
 
 ## 安装
 
-从 [GitHub 发布页面](https://github.com/RedeatI/steam-share-master-zh/releases/latest) 下载简体中文版 Windows 安装包，运行后按向导选择安装位置。
+从 [GitHub 发布页面](https://github.com/RedeatI/steam-share-master-zh/releases/latest) 下载简体中文版 Windows 精简版安装包，运行后按向导选择安装位置。精简版使用 Windows 自带的 .NET Framework 4.x，不再包含 Electron 的浏览器运行环境。
 
 安装包没有数字签名，Windows 可能提示发布者未知。可以在发布页面查看 SHA-256 校验值。
 
 原作者的 [0.1.4 安装包](https://github.com/p4ul-t/steam-share-master-ssm/releases/download/v0.1.4.electron_js/Steam.Share.Master.Setup.0.1.4.exe) 是原版，并不包含本分支的汉化和路径自动查找功能。
 
-如果要从本分支源代码运行，需要安装 Node.js，然后在项目目录中执行：
+本仓库也保留原来的 Electron 版本。如果要从 Electron 版本的源代码运行，需要安装 Node.js，然后在项目目录中执行：
 
 ```bash
 npm install
@@ -30,7 +30,7 @@ npm start
 
 程序使用 Windows 防火墙规则控制 Steam 的网络连接，通常需要管理员权限。原项目的安装包配置支持选择安装目录。
 
-要在 Windows 上构建安装包，可以执行 `npm run build -- --win nsis --x64 --publish never`；构建结果位于 `dist` 目录。
+要在 Windows 上构建 Electron 版本安装包，可以执行 `npm run build -- --win nsis --x64 --publish never`；构建结果位于 `dist` 目录。精简版源码及安装脚本位于 `lite` 目录，安装 NSIS 3 并将其加入 PATH 后，运行 `powershell -ExecutionPolicy Bypass -File lite/build.ps1` 即可构建。
 
 ## 使用方法
 
@@ -38,6 +38,8 @@ npm start
 2. 程序会优先使用已保存且有效的 Steam 路径；如果没有有效路径，会尝试从 Windows 注册表查找。未能找到时，点击 **选择 Steam 程序位置**，手动选择 `steam.exe`。可参考原项目的 [路径查找说明](https://github.com/p4ul-t/steam-share-master-ssm/blob/main/find-Steam.exe.md)。
 3. 确认游戏进度已保存后，点击 **断开 Steam 网络**。程序会强制关闭并重启 Steam，然后尝试通过防火墙断开 Steam 的网络连接。
 4. 游玩结束后，点击 **恢复 Steam 网络**。程序会再次关闭并重启 Steam。
+
+精简版使用独立的防火墙规则，不会恢复原 Electron 版创建的规则；如曾在原版中断开 Steam，请先在原版中恢复。精简版不包含原版的开机启动选项。
 
 **注意：**切换时会强制关闭 Steam，操作前请先保存并退出正在运行的游戏。离线期间 Steam 云存档不会同步；重新联网后如果出现存档冲突，请仔细确认要保留的版本。原作者建议断开 Steam 后关闭目标游戏的 Steam 云功能，但不能保证该设置会自动恢复，请自行检查。
 
