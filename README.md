@@ -13,13 +13,13 @@ SSM 与 Steam 没有官方关联。Steam 是 Valve Corporation 的商标。
 - 使用简体中文界面和系统托盘菜单。
 - 尝试在一人离线时，让家庭成员使用同一款共享单机游戏；实际效果取决于游戏和 Steam 客户端版本，不保证所有游戏都可用。
 
-## 安装
+## 下载与使用
 
-从 [GitHub 发布页面](https://github.com/RedeatI/steam-share-master-zh/releases/latest) 下载简体中文版 Windows 精简版安装包，运行后按向导选择安装位置。精简版使用 Windows 自带的 .NET Framework 4.x，不再包含 Electron 的浏览器运行环境。
+从 [GitHub 发布页面](https://github.com/RedeatI/steam-share-master-zh/releases/latest) 下载 `Steam-Share-Master-Lite.exe`，双击即可打开，无需安装。程序需要管理员权限来管理防火墙；双击后可能出现 Windows 管理员授权提示。
 
-安装向导提供“创建桌面快捷方式”选项，默认勾选，可以根据需要取消。
+精简版使用 Windows 自带的 .NET Framework 4.x，不再包含 Electron 的浏览器运行环境。程序会将 Steam 路径保存在当前用户的应用数据目录中；断网功能使用 Windows 防火墙规则。
 
-安装包没有数字签名，Windows 可能提示发布者未知。可以在发布页面查看 SHA-256 校验值。
+程序没有数字签名，Windows 可能提示发布者未知。可以在发布页面查看 SHA-256 校验值。
 
 原作者的 [0.1.4 安装包](https://github.com/p4ul-t/steam-share-master-ssm/releases/download/v0.1.4.electron_js/Steam.Share.Master.Setup.0.1.4.exe) 是原版，并不包含本分支的汉化和路径自动查找功能。
 
