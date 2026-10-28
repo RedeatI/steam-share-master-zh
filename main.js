@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog, Tray, Menu, nativeImage } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const { exec } = require('child_process');
+const { exec, execFileSync } = require('child_process');
 
 let mainWindow;
 let tray = null;
@@ -10,8 +10,22 @@ app.isQuitting = false;
 
 function getSteamPath() {
     if (fs.existsSync(steamPathFile)) {
-        return fs.readFileSync(steamPathFile, 'utf-8').trim();
+        const saved = fs.readFileSync(steamPathFile, 'utf-8').trim();
+        if (saved && fs.existsSync(saved)) return saved;
     }
+    try {
+        const script = "[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new(); " +
+            "$p = (Get-ItemProperty 'HKCU:\\Software\\Valve\\Steam' -ErrorAction SilentlyContinue).SteamExe; " +
+            "if (-not $p -or -not (Test-Path -LiteralPath $p)) { $d = (Get-ItemProperty 'HKLM:\\SOFTWARE\\WOW6432Node\\Valve\\Steam' -ErrorAction SilentlyContinue).InstallPath; if ($d) { $p = Join-Path $d 'steam.exe' } }; " +
+            "if ($p) { [Console]::Write($p) }";
+        const detected = execFileSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], {
+            encoding: 'utf8', windowsHide: true, timeout: 5000
+        }).trim();
+        if (detected && fs.existsSync(detected)) {
+            fs.writeFileSync(steamPathFile, detected);
+            return detected;
+        }
+    } catch (_) { /* Allow manual selection when detection fails. */ }
     return "C:\\Program Files (x86)\\Steam\\Steam.exe";
 }
 
@@ -23,16 +37,16 @@ function sendLog(message) {
 
 function executeBlockSteam() {
     const steamPath = getSteamPath();
-    sendLog('Blocking Steam...');
+    sendLog('正在断开 Steam 网络...');
     const commands = [
         'taskkill /F /IM "steam.exe" /IM "steamwebhelper.exe" /IM "steamservice.exe"',
         `netsh advfirewall firewall add rule name="BlockSteam" dir=out action=block program="${steamPath}" enable=yes`
     ];
-    
+
     exec(commands[0], () => {
         setTimeout(() => {
             exec(commands[1], () => {
-                sendLog("Steam blocked.");
+                sendLog("已执行断开操作。");
                 setTimeout(() => relaunchSteam(steamPath), 1000);
             });
         }, 2000);
@@ -41,19 +55,19 @@ function executeBlockSteam() {
 
 function executeUnblockSteam() {
     const steamPath = getSteamPath();
-    sendLog('Unblocking Steam...');
+    sendLog('正在恢复 Steam 网络...');
     const command = 'netsh advfirewall firewall set rule name="BlockSteam" new enable=no';
-    
+
     exec(command, () => {
         setTimeout(() => {
-            sendLog('Steam unblocked.');
+            sendLog('已执行恢复操作。');
             relaunchSteam(steamPath);
         }, 1000);
     });
 }
 
 function relaunchSteam(steamPath) {
-    sendLog("Closing and restarting Steam...");
+    sendLog("正在关闭并重启 Steam...");
     const killCommand = 'taskkill /F /IM "steam.exe" /IM "steamwebhelper.exe" /IM "steamservice.exe"';
     const startCommand = `start "" "${steamPath}"`;
 
@@ -72,27 +86,27 @@ function createTray() {
 
     const contextMenu = Menu.buildFromTemplate([
         {
-            label: 'Show SSM',
+            label: '显示主窗口',
             click: () => {
                 mainWindow.show();
             }
         },
         { type: 'separator' },
         {
-            label: 'Block Steam',
+            label: '断开 Steam 网络',
             click: () => {
                 executeBlockSteam();
             }
         },
         {
-            label: 'Unblock Steam',
+            label: '恢复 Steam 网络',
             click: () => {
                 executeUnblockSteam();
             }
         },
         { type: 'separator' },
         {
-            label: 'Run at startup',
+            label: '开机启动',
             type: 'checkbox',
             checked: app.getLoginItemSettings().openAtLogin,
             click: () => {
@@ -105,19 +119,19 @@ function createTray() {
         },
         { type: 'separator' },
         {
-            label: 'Close',
+            label: '退出',
             click: () => {
                 app.isQuitting = true;
                 app.quit();
             }
         },
         {
-            label: 'Help',
+            label: '帮助',
             click: () => {
                 const { shell } = require('electron');
                 shell.openExternal('https://github.com/p4ul-t/steam-share-master-ssm/blob/main/find-Steam.exe.md');
             }
-        },        
+        },
     ]);
 
     tray.setContextMenu(contextMenu);
@@ -177,9 +191,9 @@ ipcMain.handle('get-initial-path', () => {
 ipcMain.handle('select-steam-path', async () => {
     const result = await dialog.showOpenDialog(mainWindow, {
         properties: ['openFile'],
-        title: 'Sélectionner Steam.exe',
+        title: '选择 Steam.exe',
         defaultPath: 'C:\\',
-        filters: [{ name: 'Fichiers EXE', extensions: ['exe'] }]
+        filters: [{ name: '可执行文件', extensions: ['exe'] }]
     });
 
     if (!result.canceled && result.filePaths.length > 0) {

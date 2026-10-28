@@ -8,7 +8,7 @@ const logDisplay = document.getElementById('log-display');
 
 window.electronAPI.getInitialPath().then(path => {
     steamPath = path;
-    pathLabel.textContent = `Actual path: ${path}`;
+    pathLabel.textContent = `当前路径：${path}`;
 });
 
 blockBtn.addEventListener('click', () => {
@@ -23,7 +23,7 @@ selectPathBtn.addEventListener('click', async () => {
     const newPath = await window.electronAPI.selectSteamPath();
     if (newPath) {
         steamPath = newPath;
-        pathLabel.textContent = `Actual path: ${newPath}`;
+        pathLabel.textContent = `当前路径：${newPath}`;
     }
 });
 
@@ -34,7 +34,7 @@ window.electronAPI.onCommandLog((message) => {
         "SUCCESS: The process \"steamservice.exe\" with PID",
         "Ok.",
         "Updated 1 rule(s) on policy",
-        "No rules matched the specified criteria." 
+        "No rules matched the specified criteria."
     ];
 
 
@@ -46,12 +46,12 @@ window.electronAPI.onCommandLog((message) => {
     const newText = currentText + message.replace(/\n/g, '<br>') + '<br>';
 
     let lines = newText.split('<br>');
-    
+
 
     if (lines.length > 5) {
         lines = lines.slice(-5);
     }
-    
+
     logDisplay.innerHTML = lines.join('<br>');
-    logDisplay.scrollTop = logDisplay.scrollHeight; 
+    logDisplay.scrollTop = logDisplay.scrollHeight;
 });
