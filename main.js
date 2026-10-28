@@ -80,7 +80,7 @@ function relaunchSteam(steamPath) {
 }
 
 function createTray() {
-    const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/SSM-logo-png.ico'));
+    const icon = nativeImage.createFromPath(path.join(__dirname, 'SSM-logo-png.ico'));
     tray = new Tray(icon);
     tray.setToolTip('Steam Share Master');
 
@@ -151,7 +151,7 @@ function createWindow() {
             contextIsolation: true,
             nodeIntegration: false
         },
-        icon: path.join(__dirname, 'assets/SSM-logo-png.ico'),
+        icon: path.join(__dirname, 'SSM-logo-png.ico'),
         title: "Steam Share Master - SSM"
     });
 

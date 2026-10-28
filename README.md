@@ -15,7 +15,9 @@ SSM 与 Steam 没有官方关联。Steam 是 Valve Corporation 的商标。
 
 ## 安装
 
-**本分支目前只提供源代码，没有单独发布汉化版安装包。**
+从 [GitHub 发布页面](https://github.com/RedeatI/steam-share-master-zh/releases/latest) 下载简体中文版 Windows 安装包，运行后按向导选择安装位置。
+
+安装包没有数字签名，Windows 可能提示发布者未知。可以在发布页面查看 SHA-256 校验值。
 
 原作者的 [0.1.4 安装包](https://github.com/p4ul-t/steam-share-master-ssm/releases/download/v0.1.4.electron_js/Steam.Share.Master.Setup.0.1.4.exe) 是原版，并不包含本分支的汉化和路径自动查找功能。
 
@@ -27,6 +29,8 @@ npm start
 ```
 
 程序使用 Windows 防火墙规则控制 Steam 的网络连接，通常需要管理员权限。原项目的安装包配置支持选择安装目录。
+
+要在 Windows 上构建安装包，可以执行 `npm run build -- --win nsis --x64 --publish never`；构建结果位于 `dist` 目录。
 
 ## 使用方法
 
