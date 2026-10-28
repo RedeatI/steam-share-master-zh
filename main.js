@@ -129,7 +129,7 @@ function createTray() {
             label: '帮助',
             click: () => {
                 const { shell } = require('electron');
-                shell.openExternal('https://github.com/p4ul-t/steam-share-master-ssm/blob/main/find-Steam.exe.md');
+                shell.openExternal('https://github.com/RedeatI/steam-share-master-zh/blob/chinese/find-Steam.exe.md');
             }
         },
     ]);

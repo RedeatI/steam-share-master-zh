@@ -37,7 +37,7 @@ npm start
 ## 使用方法
 
 1. 启动 Steam Share Master。
-2. 程序会优先使用已保存且有效的 Steam 路径；如果没有有效路径，会尝试从 Windows 注册表查找。未能找到时，点击 **选择 Steam 程序位置**，手动选择 `steam.exe`。可参考原项目的 [路径查找说明](https://github.com/p4ul-t/steam-share-master-ssm/blob/main/find-Steam.exe.md)。
+2. 程序会优先使用已保存且有效的 Steam 路径；如果没有有效路径，会尝试从 Windows 注册表查找。未能找到时，点击 **选择 Steam 程序位置**，手动选择 `steam.exe`。可参考[路径查找说明](find-Steam.exe.md)。
 3. 确认游戏进度已保存后，点击 **断开 Steam 网络**。程序会强制关闭并重启 Steam，然后尝试通过防火墙断开 Steam 的网络连接。
 4. 游玩结束后，点击 **恢复 Steam 网络**。程序会再次关闭并重启 Steam。
 
@@ -58,7 +58,7 @@ https://github.com/user-attachments/assets/c67c62ed-fe92-435e-8836-c0ed193b9482
 
 ## 遇到问题
 
-如果程序没有找到 Steam，可以点击 **选择 Steam 程序位置**，手动选择 `steam.exe`。查找方法也可以参考原项目的 [说明文档](https://github.com/p4ul-t/steam-share-master-ssm/blob/main/find-Steam.exe.md)。
+如果程序没有找到 Steam，可以点击 **选择 Steam 程序位置**，手动选择 `steam.exe`。查找方法也可以参考[说明文档](find-Steam.exe.md)。
 
 ## 许可证
 
