@@ -1,69 +1,63 @@
-# 简体中文版本
+# Steam Share Master（简体中文版）
 
-本分支基于原作者的 Steam Share Master 0.1.4，提供简体中文界面、托盘菜单和日志，并在没有有效手动路径时从 Windows 注册表查找 Steam。已保存且存在的手动路径优先；未找到时可以手动选择。
+Steam Share Master（SSM）是一款 Windows 工具，可以按需阻止 Steam 访问网络，同时保持电脑其他程序的网络连接。本分支基于原作者的 0.1.4 版本，提供简体中文界面、托盘菜单和操作提示，并支持自动查找 Steam 安装路径。
 
-切换网络会强制关闭并重启 Steam，请先保存游戏进度。程序通过 Windows 防火墙隔离 Steam，通常需要管理员权限。离线游戏兼容性、Steam 家庭库并行使用效果取决于游戏和 Steam 客户端，未保证可用。
+原项目最初于 2025 年 2 月 13 日使用 Python 发布，2025 年 6 月 22 日迁移至 Electron。
 
-请遵循下方原项目的 GPL-3.0 许可证说明。
+SSM 与 Steam 没有官方关联。Steam 是 Valve Corporation 的商标。
 
----
+## 功能
 
-# Steam Share Master - SSM
+- 按需断开或恢复 Steam 的网络连接，不需要让整台电脑断网。
+- 自动查找 Steam 安装路径，也可以手动选择。
+- 使用简体中文界面和系统托盘菜单。
+- 尝试在一人离线时，让家庭成员使用同一款共享单机游戏；实际效果取决于游戏和 Steam 客户端版本，不保证所有游戏都可用。
 
-## 📝 Description
-Steam Share Master (SSM) is a portable Windows software coded in Python that isolates Steam from the internet on demand while keeping your PC online.  
-It lets you play Steam Family Sharing games simultaneously, so you and your family members can enjoy the same game without interruptions.  
+## 安装
 
-13/02/2025 : first release (python) -
-22/06/2025 : migrated the app to electronJS
+**本分支目前只提供源代码，没有单独发布汉化版安装包。**
 
-SSM has NO affiliation with Steam.  
-Steam is a trademark of Valve Corporation.
+原作者的 [0.1.4 安装包](https://github.com/p4ul-t/steam-share-master-ssm/releases/download/v0.1.4.electron_js/Steam.Share.Master.Setup.0.1.4.exe) 是原版，并不包含本分支的汉化和路径自动查找功能。
 
-## 🚀 Features
-- Keep Steam isolated from the network without disconnecting your PC from the internet
-- Play shared family games simultaneously
-- Simple and intuitive interface
-- Lightweight and easy to set up
-- System tray icon with options
+如果要从本分支源代码运行，需要安装 Node.js，然后在项目目录中执行：
 
-## 📥 Installation
-1. [Download](https://github.com/p4ul-t/steam-share-master-ssm/releases/download/v0.1.4.electron_js/Steam.Share.Master.Setup.0.1.4.exe)
-2. Click on the `.exe` file to install the program  
-   *When the program is launched, pin it to your taskbar for quicker access in the future.*
+```bash
+npm install
+npm start
+```
 
-## 🛠 Usage
-1. Launch Steam Share Master
-2. Locate your `Steam.exe` file if it's not located in `C:\Program Files (x86)\Steam\Steam.exe` by default [(optional)](https://github.com/p4ul-t/steam-share-master-ssm/blob/main/find-Steam.exe.md)
-3. Click on **Block Steam** to isolate Steam from the network if someone from your Steam Family is currently playing a game you want to play
-4. Click on **Unblock Steam** to reconnect Steam to the network when you're done playing  
+程序使用 Windows 防火墙规则控制 Steam 的网络连接，通常需要管理员权限。原项目的安装包配置支持选择安装目录。
 
-   **DISCLAIMER:** You must deactivate Steam Cloud on the game you want to play after blocking Steam, but don't worry : Steam Cloud saves will resynchronize and reactivate by itself after unblocking Steam.
+## 使用方法
 
+1. 启动 Steam Share Master。
+2. 程序会优先使用已保存且有效的 Steam 路径；如果没有有效路径，会尝试从 Windows 注册表查找。未能找到时，点击 **选择 Steam 程序位置**，手动选择 `steam.exe`。可参考原项目的 [路径查找说明](https://github.com/p4ul-t/steam-share-master-ssm/blob/main/find-Steam.exe.md)。
+3. 确认游戏进度已保存后，点击 **断开 Steam 网络**。程序会强制关闭并重启 Steam，然后尝试通过防火墙断开 Steam 的网络连接。
+4. 游玩结束后，点击 **恢复 Steam 网络**。程序会再次关闭并重启 Steam。
 
+**注意：**切换时会强制关闭 Steam，操作前请先保存并退出正在运行的游戏。离线期间 Steam 云存档不会同步；重新联网后如果出现存档冲突，请仔细确认要保留的版本。原作者建议断开 Steam 后关闭目标游戏的 Steam 云功能，但不能保证该设置会自动恢复，请自行检查。
 
-
+以下是原项目的演示视频，画面中的界面为原版：
 
 https://github.com/user-attachments/assets/c67c62ed-fe92-435e-8836-c0ed193b9482
 
+## 已知问题与限制
 
+- 需要持续联网或使用额外联网验证的游戏可能无法运行。
+- Steam 的家庭共享规则或客户端更新后，此方法可能失效或需要调整。
+- 同时使用家庭库中同一款游戏的效果尚未得到本分支的完整验证。
+- 离线期间无法使用需要 Steam 网络连接的功能。
 
+## 遇到问题
 
-## 🔥 Known Issues & Limitations
-- Some games with always-online DRM may not work.
-- If Steam updates its Family Sharing policies, the method may require adjustments.
+如果程序没有找到 Steam，可以点击 **选择 Steam 程序位置**，手动选择 `steam.exe`。查找方法也可以参考原项目的 [说明文档](https://github.com/p4ul-t/steam-share-master-ssm/blob/main/find-Steam.exe.md)。
 
-## 🔎 Troubleshooting Guide
-"I don't know where my `Steam.exe` file is and my Steam.exe path is not by default `C:\Program Files (x86)\Steam\Steam.exe`" [INSTRUCTIONS](https://github.com/p4ul-t/steam-share-master-ssm/blob/main/find-Steam.exe.md)    
+## 许可证
 
-## 📄 License
-This project is licensed under the GNU General Public License v3.0. See [LICENSE](https://github.com/p4ul-t/steam-share-master-ssm/blob/main/LICENSE) for details.
+本项目采用 GNU 通用公共许可证第 3 版（GPL-3.0）。详情请查看 [LICENSE](https://github.com/p4ul-t/steam-share-master-ssm/blob/main/LICENSE)。
 
-## 🤝 Contributing
-Contributions are welcome! Feel free to fork the project, submit issues, or create pull requests.
+## 参与贡献
 
-### ❤️ Support the Project
-If you find this project useful, ⭐ star the repository and share it!
+欢迎 fork 本项目、提交问题或发起拉取请求。
 
-
-
+如果你觉得原项目有用，也欢迎为[原项目](https://github.com/p4ul-t/steam-share-master-ssm)点星并分享。
