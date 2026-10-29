@@ -6,7 +6,8 @@ $output = Join-Path $PSScriptRoot "Steam-Share-Master-Lite.exe"
 $manifest = Join-Path $PSScriptRoot "app.manifest"
 $icon = Join-Path $projectRoot "SSM-logo-png.ico"
 $source = Join-Path $PSScriptRoot "Program.cs"
-& $compiler /nologo /target:winexe /optimize+ /codepage:65001 "/win32manifest:$manifest" "/win32icon:$icon" /reference:System.Windows.Forms.dll /reference:System.Drawing.dll "/out:$output" $source
+$networkSource = Join-Path $PSScriptRoot "NetworkSwitch.cs"
+& $compiler /nologo /target:winexe /optimize+ /codepage:65001 "/win32manifest:$manifest" "/win32icon:$icon" /reference:System.Windows.Forms.dll /reference:System.Drawing.dll "/out:$output" $source $networkSource
 if ($LASTEXITCODE -ne 0) { throw "C# compilation failed." }
 & $Makensis (Join-Path $PSScriptRoot "installer.nsi")
 if ($LASTEXITCODE -ne 0) { throw "NSIS packaging failed." }

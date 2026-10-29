@@ -17,7 +17,6 @@ namespace SteamShareMasterLite {
         }
     }
     sealed class MainForm : Form {
-        const string Rule = "SteamShareMasterLite";
         readonly string config = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "steam-share-master", "steam_path.txt");
         readonly Label pathLabel = new Label();
         readonly TextBox log = new TextBox();
@@ -119,36 +118,10 @@ namespace SteamShareMasterLite {
             try {
                 string exe = steamPath;
                 WriteLog(disconnect ? "正在断开 Steam 网络..." : "正在恢复 Steam 网络...");
-                string result = await Task.Run(() => ChangeNetwork(exe, disconnect));
+                string result = await Task.Run(() => NetworkSwitch.Execute(new WindowsSwitchOperations(), exe, disconnect));
                 WriteLog(result);
             } catch (Exception ex) { WriteLog("操作失败：" + ex.Message); }
             finally { busy = false; block.Enabled = unblock.Enabled = true; }
-        }
-        static string ChangeNetwork(string exe, bool disconnect) {
-            foreach (var name in new[] {"steam", "steamwebhelper"}) {
-                foreach (var process in Process.GetProcessesByName(name)) {
-                    try { process.Kill(); process.WaitForExit(5000); } finally { process.Dispose(); }
-                }
-            }
-            if (disconnect) RunNetsh("advfirewall firewall delete rule name=\"" + Rule + "\"");
-            string args = disconnect
-                ? "advfirewall firewall add rule name=\"" + Rule + "\" dir=out action=block program=\"" + exe + "\" enable=yes"
-                : "advfirewall firewall delete rule name=\"" + Rule + "\"";
-            int code = RunNetsh(args);
-            if (code != 0) return "防火墙操作失败，返回代码：" + code + "。Steam 未自动重启。";
-            Process.Start(new ProcessStartInfo(exe) { UseShellExecute = true, WorkingDirectory = Path.GetDirectoryName(exe) });
-            return disconnect ? "已断开 Steam 网络，正在启动 Steam。" : "已恢复 Steam 网络，正在启动 Steam。";
-        }
-        static int RunNetsh(string args) {
-            using (var p = Process.Start(new ProcessStartInfo("netsh.exe", args) {
-                UseShellExecute = false, CreateNoWindow = true, WindowStyle = ProcessWindowStyle.Hidden,
-                RedirectStandardOutput = true, RedirectStandardError = true
-            })) {
-                p.StandardOutput.ReadToEnd();
-                p.StandardError.ReadToEnd();
-                p.WaitForExit();
-                return p.ExitCode;
-            }
         }
     }
 }
