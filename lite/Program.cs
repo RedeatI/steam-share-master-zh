@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Win32;
 
@@ -11,9 +12,16 @@ namespace SteamShareMasterLite {
     static class Program {
         [STAThread]
         static void Main() {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            bool created;
+            using (var mutex = new Mutex(true, @"Local\SteamShareMasterLiteWfp", out created)) {
+                if (!created) {
+                    MessageBox.Show("软件已经运行，请在系统托盘中打开。", "Steam Share Master");
+                    return;
+                }
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new MainForm());
+            }
         }
     }
     sealed class MainForm : Form {
@@ -23,6 +31,7 @@ namespace SteamShareMasterLite {
         readonly Button block = new Button();
         readonly Button unblock = new Button();
         readonly NotifyIcon tray = new NotifyIcon();
+        readonly WindowsSwitchOperations operations = new WindowsSwitchOperations();
         string steamPath;
         bool quitting;
         bool busy;
@@ -66,13 +75,17 @@ namespace SteamShareMasterLite {
             menu.Items.Add("显示主窗口", null, delegate { Show(); WindowState = FormWindowState.Normal; Activate(); });
             menu.Items.Add("断开 Steam 网络", null, async delegate { await SwitchSteam(true); });
             menu.Items.Add("恢复 Steam 网络", null, async delegate { await SwitchSteam(false); });
-            menu.Items.Add("退出", null, delegate { quitting = true; tray.Visible = false; Close(); });
+            menu.Items.Add("退出", null, delegate {
+                if (busy) { WriteLog("请等待当前操作完成后再退出。"); return; }
+                quitting = true; tray.Visible = false; Close();
+            });
             tray.Icon = Icon;
             tray.Text = "Steam Share Master 精简版";
             tray.ContextMenuStrip = menu;
             tray.Visible = true;
             tray.DoubleClick += delegate { Show(); WindowState = FormWindowState.Normal; Activate(); };
             FormClosing += delegate(object sender, FormClosingEventArgs e) { if (!quitting && e.CloseReason == CloseReason.UserClosing) { e.Cancel = true; Hide(); } };
+            FormClosed += delegate { operations.Dispose(); tray.Dispose(); };
         }
         string FindSteam() {
             try {
@@ -98,6 +111,10 @@ namespace SteamShareMasterLite {
         }
         void ShowPath() { pathLabel.Text = "Steam 路径：" + (String.IsNullOrEmpty(steamPath) ? "未找到，请手动选择" : steamPath); }
         void SelectSteam() {
+            if (busy || operations.IsBlocked) {
+                WriteLog("请先恢复 Steam 网络，再更改程序位置。");
+                return;
+            }
             using (var dialog = new OpenFileDialog()) {
                 dialog.Title = "选择 Steam.exe";
                 dialog.Filter = "Steam 程序 (steam.exe)|steam.exe|可执行文件 (*.exe)|*.exe";
@@ -118,7 +135,7 @@ namespace SteamShareMasterLite {
             try {
                 string exe = steamPath;
                 WriteLog(disconnect ? "正在断开 Steam 网络..." : "正在恢复 Steam 网络...");
-                string result = await Task.Run(() => NetworkSwitch.Execute(new WindowsSwitchOperations(), exe, disconnect));
+                string result = await Task.Run(() => NetworkSwitch.Execute(operations, exe, disconnect));
                 WriteLog(result);
             } catch (Exception ex) { WriteLog("操作失败：" + ex.Message); }
             finally { busy = false; block.Enabled = unblock.Enabled = true; }

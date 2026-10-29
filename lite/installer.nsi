@@ -2,7 +2,7 @@
 !include "MUI2.nsh"
 !include "LogicLib.nsh"
 Name "Steam Share Master 精简版"
-OutFile "Steam-Share-Master-Lite-Setup-0.2.1.exe"
+OutFile "Steam-Share-Master-Lite-Setup-0.3.0.exe"
 InstallDir "$PROGRAMFILES64\Steam Share Master Lite"
 RequestExecutionLevel admin
 !define MUI_ABORTWARNING
@@ -24,7 +24,7 @@ Section "程序文件（必需）"
   CreateShortcut "$SMPROGRAMS\Steam Share Master 精简版\Steam Share Master 精简版.lnk" "$INSTDIR\Steam-Share-Master-Lite.exe"
   WriteUninstaller "$INSTDIR\Uninstall.exe"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SteamShareMasterLite" "DisplayName" "Steam Share Master 精简版"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SteamShareMasterLite" "DisplayVersion" "0.2.1"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SteamShareMasterLite" "DisplayVersion" "0.3.0"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SteamShareMasterLite" "UninstallString" '"$INSTDIR\Uninstall.exe"'
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SteamShareMasterLite" "NoModify" 1
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SteamShareMasterLite" "NoRepair" 1

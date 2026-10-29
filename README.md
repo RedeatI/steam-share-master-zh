@@ -17,9 +17,11 @@ SSM 与 Steam 没有官方关联。Steam 是 Valve Corporation 的商标。
 
 从 [GitHub 发布页面](https://github.com/RedeatI/steam-share-master-zh/releases/latest) 下载 `Steam-Share-Master-Lite.exe`，双击即可打开，无需安装。程序需要管理员权限来管理防火墙；双击后可能出现 Windows 管理员授权提示。
 
-精简版使用 Windows 自带的 .NET Framework 4.x，不再包含 Electron 的浏览器运行环境。程序会将 Steam 路径保存在当前用户的应用数据目录中；断网功能使用 Windows 防火墙规则。
+精简版使用 Windows 自带的 .NET Framework 4.x，不再包含 Electron 的浏览器运行环境。程序会将 Steam 路径保存在当前用户的应用数据目录中；断网功能使用 Windows 筛选平台（WFP），无需启用 Windows 防火墙配置，但需要基础筛选引擎（BFE）服务运行。
 
 程序没有数字签名，Windows 可能提示发布者未知。可以在发布页面查看 SHA-256 校验值。
+
+开发期间，火绒曾将 WFP 版本的测试程序和正式程序标记为 `Backdoor/Steam`。该检测尚未得到厂商确认，不能断定为误报；请自行决定是否运行。
 
 原作者的 [0.1.4 安装包](https://github.com/p4ul-t/steam-share-master-ssm/releases/download/v0.1.4.electron_js/Steam.Share.Master.Setup.0.1.4.exe) 是原版，并不包含本分支的汉化和路径自动查找功能。
 
@@ -30,20 +32,18 @@ npm install
 npm start
 ```
 
-程序使用 Windows 防火墙规则控制 Steam 的网络连接，通常需要管理员权限。原项目的安装包配置支持选择安装目录。
+程序需要管理员权限才能添加和移除 WFP 网络筛选规则。原项目的安装包配置支持选择安装目录。
 
-要在 Windows 上构建 Electron 版本安装包，可以执行 `npm run build -- --win nsis --x64 --publish never`；构建结果位于 `dist` 目录。精简版源码及安装脚本位于 `lite` 目录，安装 NSIS 3 并将其加入 PATH 后，运行 `powershell -ExecutionPolicy Bypass -File lite/build.ps1` 即可构建。
+要在 Windows 上构建 Electron 版本安装包，可以执行 `npm run build -- --win nsis --x64 --publish never`；构建结果位于 `dist` 目录。精简版源码及构建脚本位于 `lite` 目录，运行 `powershell -ExecutionPolicy Bypass -File lite/build.ps1` 可构建免安装程序；如需自行构建安装包，需安装 NSIS 3 并在命令末尾添加 `-Installer`。
 
 ## 使用方法
 
 1. 启动 Steam Share Master。
 2. 程序会优先使用已保存且有效的 Steam 路径；如果没有有效路径，会尝试从 Windows 注册表查找。未能找到时，点击 **选择 Steam 程序位置**，手动选择 `steam.exe`。可参考[路径查找说明](find-Steam.exe.md)。
-3. 确认游戏进度已保存后，点击 **断开 Steam 网络**。程序会强制关闭并重启 Steam，然后尝试通过防火墙断开 Steam 的网络连接。
+3. 确认游戏进度已保存后，点击 **断开 Steam 网络**。程序会添加仅针对 Steam 程序的临时 WFP 规则，然后关闭并重启 Steam。
 4. 游玩结束后，点击 **恢复 Steam 网络**。程序会再次关闭并重启 Steam。
 
-精简版使用独立的防火墙规则，不会恢复原 Electron 版创建的规则；如曾在原版中断开 Steam，请先在原版中恢复。精简版不包含原版的开机启动选项。
-
-断开 Steam 网络前，程序会检查当前网络使用的 Windows 防火墙配置；如果有配置处于关闭状态，程序会提示原因并保留 Steam 当前状态。防火墙操作失败时，程序会显示系统返回的信息。
+断网期间请保持本软件运行：退出或异常关闭后，临时 WFP 规则会自动移除，Steam 可以重新联网。精简版不会移除旧版创建的 Windows 防火墙规则；如曾在旧版中断开 Steam，请先在旧版中恢复。精简版不包含原版的开机启动选项。
 
 **注意：**切换时会强制关闭 Steam，操作前请先保存并退出正在运行的游戏。离线期间 Steam 云存档不会同步；重新联网后如果出现存档冲突，请仔细确认要保留的版本。原作者建议断开 Steam 后关闭目标游戏的 Steam 云功能，但不能保证该设置会自动恢复，请自行检查。
 
