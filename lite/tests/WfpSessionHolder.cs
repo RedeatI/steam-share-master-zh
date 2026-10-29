@@ -6,7 +6,9 @@ static class WfpSessionHolder {
     static int Main(string[] args) {
         try {
             using (var session = new WfpSession()) {
-                session.Block(new[] { Path.GetFullPath(args[0]) });
+                var paths = new System.Collections.Generic.List<string> { Path.GetFullPath(args[0]) };
+                for (int i = 2; i < args.Length; i++) paths.Add(Path.GetFullPath(args[i]));
+                session.Block(paths);
                 File.WriteAllText(args[1], "ready");
                 Thread.Sleep(120000);
             }

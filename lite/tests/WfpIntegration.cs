@@ -82,7 +82,7 @@ static class WfpIntegration {
                 log.AppendLine("Target connectivity restored after WFP session closed.");
                 string ready = args[2] + ".ready";
                 if (File.Exists(ready)) throw new Exception("Crash-test signal already exists.");
-                using (var child = Process.Start(new ProcessStartInfo(args[3], target + " " + ready) { UseShellExecute = false, CreateNoWindow = true })) {
+                using (var child = Process.Start(new ProcessStartInfo(args[3], "\"" + target + "\" \"" + ready + "\"") { UseShellExecute = false, CreateNoWindow = true })) {
                     try {
                         for (int i = 0; i < 100 && !File.Exists(ready) && !child.HasExited; i++) System.Threading.Thread.Sleep(100);
                         Expect(File.Exists(ready) && File.ReadAllText(ready) == "ready", "Crash-test session did not start.");
