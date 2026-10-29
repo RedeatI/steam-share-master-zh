@@ -21,7 +21,7 @@ SSM 与 Steam 没有官方关联。Steam 是 Valve Corporation 的商标。
 
 程序没有数字签名，Windows 可能提示发布者未知。可以在发布页面查看 SHA-256 校验值。
 
-开发期间，火绒曾将 WFP 版本的测试程序和正式程序标记为 `Backdoor/Steam`。该检测尚未得到厂商确认，不能断定为误报；请自行决定是否运行。
+WFP 网络规则和切换逻辑的源码可在 [WfpSession.cs](lite/WfpSession.cs) 和 [NetworkSwitch.cs](lite/NetworkSwitch.cs) 中查看，相关验证代码位于 [lite/tests](lite/tests)。
 
 原作者的 [0.1.4 安装包](https://github.com/p4ul-t/steam-share-master-ssm/releases/download/v0.1.4.electron_js/Steam.Share.Master.Setup.0.1.4.exe) 是原版，并不包含本分支的汉化和路径自动查找功能。
 
