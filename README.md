@@ -17,7 +17,7 @@ SSM 与 Steam 没有官方关联。Steam 是 Valve Corporation 的商标。
 
 从 [GitHub 发布页面](https://github.com/RedeatI/steam-share-master-zh/releases/latest) 下载 `Steam-Share-Master-Lite.exe`，双击即可打开，无需安装。程序需要管理员权限来管理防火墙；双击后可能出现 Windows 管理员授权提示。
 
-精简版使用 Windows 自带的 .NET Framework 4.x，不再包含 Electron 的浏览器运行环境。程序会将 Steam 路径保存在当前用户的应用数据目录中；断网功能使用 Windows 筛选平台（WFP），无需启用 Windows 防火墙配置，但需要基础筛选引擎（BFE）服务运行。
+精简版使用 Windows 自带的 .NET Framework 4.x，不再包含 Electron 的浏览器运行环境。程序会将 Steam 路径保存在当前用户的应用数据目录中；断网功能使用 Windows 筛选平台（WFP），无需启用 Windows 防火墙配置，但需要基础筛选引擎（BFE）服务运行。本机回环连接不会被拦截，以便 Steam 和网页组件相互通信。
 
 程序没有数字签名，Windows 可能提示发布者未知。可以在发布页面查看 SHA-256 校验值。
 

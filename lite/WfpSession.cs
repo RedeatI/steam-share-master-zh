@@ -9,6 +9,7 @@ namespace SteamShareMasterLite {
         static readonly Guid ConnectV4 = new Guid("c38d57d1-05a7-4c33-904f-7fbceee60e82");
         static readonly Guid ConnectV6 = new Guid("4a72393b-319f-44bc-84c3-ba54dcb3b6b4");
         static readonly Guid AppId = new Guid("d78e1e87-8644-4ea5-9437-d809ecefc971");
+        static readonly Guid Flags = new Guid("632ce23b-5167-435c-86d7-e903684aa80c");
         static readonly Guid Universal = new Guid("eebecc03-ced4-4380-819a-2734397b2b74");
         IntPtr engine;
 
@@ -76,12 +77,16 @@ namespace SteamShareMasterLite {
             try {
                 Check(FwpmGetAppIdFromFileName0(path, out blob), "识别程序 " + path);
                 var condition = new Condition { fieldKey = AppId, matchType = 0, conditionValue = new Value { type = 12, value = blob } };
-                conditionPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(Condition)));
+                // Only block non-loopback traffic. Steam uses loopback for its UI transport.
+                var nonLoopback = new Condition { fieldKey = Flags, matchType = 8, conditionValue = new Value { type = 3, value = new IntPtr(1) } };
+                int conditionSize = Marshal.SizeOf(typeof(Condition));
+                conditionPtr = Marshal.AllocHGlobal(conditionSize * 2);
                 Marshal.StructureToPtr(condition, conditionPtr, false);
+                Marshal.StructureToPtr(nonLoopback, IntPtr.Add(conditionPtr, conditionSize), false);
                 var filter = new Filter {
                     key = Guid.NewGuid(), display = new DisplayData { name = "Steam Share Master 临时断网" },
                     layerKey = layer, subLayerKey = Universal, weight = new Value { type = 0 },
-                    conditionCount = 1, conditions = conditionPtr, action = new ActionData { type = 0x1001 }
+                    conditionCount = 2, conditions = conditionPtr, action = new ActionData { type = 0x1001 }
                 };
                 ulong id;
                 Check(FwpmFilterAdd0(handle, ref filter, IntPtr.Zero, out id), "添加 WFP 规则");

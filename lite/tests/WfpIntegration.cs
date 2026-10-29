@@ -58,21 +58,21 @@ static class WfpIntegration {
                 using (var session = new WfpSession()) {
                     session.Block(new[] { target });
                     log.AppendLine("WFP filters added.");
-                    Expect(Probe(target, IPAddress.Loopback, port4) != 0, "IPv4 block");
-                    Expect(Probe(target, IPAddress.IPv6Loopback, port6) != 0, "IPv6 block");
+                    Expect(Probe(target, IPAddress.Loopback, port4) == 0, "IPv4 loopback must remain available");
+                    Expect(Probe(target, IPAddress.IPv6Loopback, port6) == 0, "IPv6 loopback must remain available");
                     Expect(Probe(control, IPAddress.Loopback, port4) == 0, "Control IPv4 unaffected");
                     Expect(Probe(control, IPAddress.IPv6Loopback, port6) == 0, "Control IPv6 unaffected");
-                    Expect(!ProbeUdp(target, IPAddress.Loopback, udp4), "UDP IPv4 block");
-                    Expect(!ProbeUdp(target, IPAddress.IPv6Loopback, udp6), "UDP IPv6 block");
+                    Expect(ProbeUdp(target, IPAddress.Loopback, udp4), "UDP IPv4 loopback must remain available");
+                    Expect(ProbeUdp(target, IPAddress.IPv6Loopback, udp6), "UDP IPv6 loopback must remain available");
                     Expect(ProbeUdp(control, IPAddress.Loopback, udp4), "Control UDP IPv4 unaffected");
                     Expect(ProbeUdp(control, IPAddress.IPv6Loopback, udp6), "Control UDP IPv6 unaffected");
-                    log.AppendLine("UDP target blocked and control unaffected, IPv4 and IPv6.");
+                    log.AppendLine("TCP and UDP loopback remain available for both processes, IPv4 and IPv6.");
                     if (remoteAvailable) {
                         Expect(Probe(target, remote, 443) != 0, "Remote target block");
                         Expect(Probe(control, remote, 443) == 0, "Remote control unaffected");
                         log.AppendLine("Remote target blocked and remote control unaffected.");
                     }
-                    log.AppendLine("Target blocked and control unaffected, IPv4 and IPv6.");
+                    log.AppendLine("Loopback access preserved; other process unaffected.");
                 }
                 Expect(Probe(target, IPAddress.Loopback, port4) == 0, "IPv4 restored");
                 Expect(Probe(target, IPAddress.IPv6Loopback, port6) == 0, "IPv6 restored");
@@ -86,12 +86,13 @@ static class WfpIntegration {
                     try {
                         for (int i = 0; i < 100 && !File.Exists(ready) && !child.HasExited; i++) System.Threading.Thread.Sleep(100);
                         Expect(File.Exists(ready) && File.ReadAllText(ready) == "ready", "Crash-test session did not start.");
-                        Expect(Probe(target, IPAddress.Loopback, port4) != 0, "Crash-test block");
+                        if (!remoteAvailable) throw new Exception("Crash-test remote baseline unavailable.");
+                        Expect(Probe(target, remote, 443) != 0, "Crash-test block");
                         child.Kill();
                         child.WaitForExit();
                         bool restoredAfterCrash = false;
                         for (int i = 0; i < 20; i++) {
-                            if (Probe(target, IPAddress.Loopback, port4) == 0) { restoredAfterCrash = true; break; }
+                            if (Probe(target, remote, 443) == 0) { restoredAfterCrash = true; break; }
                             System.Threading.Thread.Sleep(250);
                         }
                         Expect(restoredAfterCrash, "Crash-test cleanup");
